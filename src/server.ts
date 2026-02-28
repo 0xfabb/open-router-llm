@@ -14,7 +14,8 @@ app.get("/", async (req: Request, res: Response) => {
   res.json({ msg: "Hello world" });
 });
 
-const requests = 0;
+var requests = 0;
+requests++;
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/llms", llmRoutes);
