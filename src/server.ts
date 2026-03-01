@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
-import llmRoutes from "./routes/LLMRoutes";
-import authRoutes from "./routes/AuthRoutes";
+import llmRoutes from "./routes/LLMRoutes.js";
+import authRoutes from "./routes/AuthRoutes.js";
 const app = express();
 import { Request, Response } from "express";
 
@@ -11,11 +11,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/", async (req: Request, res: Response) => {
+  requests++;
   res.json({ msg: "Hello world" });
 });
 
 var requests = 0;
-requests++;
+console.log("Total Requests: ", requests);
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/llms", llmRoutes);
