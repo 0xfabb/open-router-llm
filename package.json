@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsup",
-    "start": "node dist/server.js",
+    "start": "tsx src/server.ts",
     "test": "node tests/server.js",
-    "dev": "tsx watch src/server.ts",
-    "dev:build": "npm run build && npm run start"
+    "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
   "author": "",

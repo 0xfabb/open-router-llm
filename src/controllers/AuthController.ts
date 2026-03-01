@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createUserName } from "../utils/utilfunctions";
 import { APIResponse } from "../types/globalTypes";
-import { signUpService } from "../services/AuthService";
+import { loginService, signUpService } from "../services/AuthService";
 import { User } from "../types/userTypes";
 
 export const signupControl = async (req: Request, res: Response) => {
@@ -56,7 +56,26 @@ export const signupControl = async (req: Request, res: Response) => {
 
 export const loginControl = async (req: Request, res: Response) => {
   try {
-  } catch (error) {}
+    const { email, password } = req.body;
+    if (!email || !password) {
+    }
+    const loginUser = await loginService(email, password);
+    const returnData: APIResponse = {
+      msg: "Logged in success",
+      data: loginUser?.data || null,
+      success: true,
+      status: 200,
+    };
+    return res.json(returnData);
+  } catch (error) {
+    const returnData: APIResponse = {
+      msg: "Internal Server Error",
+      data: {},
+      success: false,
+      status: 500,
+    };
+    return res.json(returnData);
+  }
 };
 
 export const changePSControl = async (req: Request, res: Response) => {

@@ -4,7 +4,6 @@ import { loginCheck } from "../middlewares/authCheck";
 
 const router = Router();
 
-router.get("/get-key", loginCheck, getKeyControl);
-router.post("create-key");
+router.post("/get-keys", loginCheck, getKeyControl);
 
 export default router;

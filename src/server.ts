@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import llmRoutes from "./routes/LLMRoutes";
 import authRoutes from "./routes/AuthRoutes";
+import userRoutes from "./routes/UserRoutes";
 const app = express();
 import { Request, Response } from "express";
 
@@ -19,6 +20,7 @@ var requests = 0;
 console.log("Total Requests: ", requests);
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/llms", llmRoutes);
 
 app.listen(PORT, () => {

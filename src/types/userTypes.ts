@@ -30,3 +30,11 @@ export interface ServiceResult<T> {
   error?: string;
   statusCode?: number;
 }
+
+export interface loggedInUser {
+  email: string;
+  userName: string;
+  accessToken: string;
+  refreshToken: string;
+  tokenExpires: Date;
+}
