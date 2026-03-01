@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
-import llmRoutes from "./routes/LLMRoutes.js";
-import authRoutes from "./routes/AuthRoutes.js";
+import llmRoutes from "./routes/LLMRoutes";
+import authRoutes from "./routes/AuthRoutes";
 const app = express();
 import { Request, Response } from "express";
 

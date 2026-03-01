@@ -3,7 +3,7 @@ import {
   signupControl,
   loginControl,
   changePSControl,
-} from "../controllers/AuthController.js";
+} from "../controllers/AuthController";
 
 const router = Router();
 

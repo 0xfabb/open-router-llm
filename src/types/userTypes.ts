@@ -1,8 +1,9 @@
 export interface User {
-  firstname: string;
-  lastname: string;
-  username: string;
+  firstname?: string;
+  lastname?: string;
+  userName: string;
   email: string;
+  password: string;
 }
 
 export interface APIKey {
@@ -11,23 +12,21 @@ export interface APIKey {
   key: string;
 }
 
-export interface NewUser {
-  firstname: string;
-  lastname: string;
-  username: string;
+export interface CreatedUser {
+  firstname: string | null;
+  lastname: string | null;
+  userName: string;
   email: string;
-  isEmailVerified: string;
+  isEmailVerified: boolean;
   accessToken: string;
-  refreshToken: string;
-  tokenExpires: Date;
+  refreshToken: string | null;
+  tokenExpires: Date | null;
+  password: string;
 }
 
-export interface ServiceResult {
+export interface ServiceResult<T> {
   success: boolean;
-  data: object;
-  statusCode: BigInt;
-}
-
-class llmUser implements User {
-  constructor() {}
+  data?: T;
+  error?: string;
+  statusCode?: number;
 }
