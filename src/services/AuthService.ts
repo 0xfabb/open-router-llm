@@ -101,7 +101,6 @@ export async function loginService(
     const passwordStored = gotUser.password;
     const isMatch = await compare(password, passwordStored);
 
-    // If password doesn't match, return error
     if (!isMatch) {
       const returnData = {
         success: false,
@@ -112,7 +111,6 @@ export async function loginService(
       return returnData;
     }
 
-    // Password is correct - generate new tokens and update DB
     const newRefreshToken = crypto.randomBytes(32).toString("hex");
     const newAccessToken = crypto.randomBytes(32).toString("hex");
     const newLastlogin = new Date(Date.now());

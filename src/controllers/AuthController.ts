@@ -32,7 +32,6 @@ export const signupControl = async (req: Request, res: Response) => {
 
     const createdUser = await signUpService(userStruct);
     
-    // Handle duplicate email error
     if (!createdUser.success && createdUser.statusCode === 409) {
       return res.status(409).json({
         msg: createdUser.error || "Email already registered",
@@ -44,7 +43,6 @@ export const signupControl = async (req: Request, res: Response) => {
     }
     
     if (createdUser.success && createdUser.data) {
-      // Remove sensitive fields from response
       const { password, accessToken, refreshToken, tokenExpires, ...safeUserData } = createdUser.data;
       
       const success: APIResponse = {
@@ -71,7 +69,6 @@ export const signupControl = async (req: Request, res: Response) => {
         .json(success);
     }
     
-    // Handle other signup errors
     return res.status(500).json({
       msg: "Signup failed",
       success: false,
