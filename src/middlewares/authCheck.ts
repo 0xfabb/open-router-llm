@@ -8,20 +8,20 @@ export async function loginCheck(
 ) {
   try {
     const token = req.headers.refreshtoken;
-    const { userName } = req.body;
+    const { username } = req.body;
     console.log("Got the token as: ", token);
-    console.log("Got the userName as: ", userName);
+    console.log("Got the username as: ", username);
 
     if (!token || typeof token !== "string") {
       return res.status(400).json({ msg: "Invalid token provided" });
     }
 
-    if (!userName || typeof userName !== "string") {
-      return res.status(400).json({ msg: "Invalid userName provided" });
+    if (!username || typeof username !== "string") {
+      return res.status(400).json({ msg: "Invalid username provided" });
     }
 
     const user = await prisma.user.findUnique({
-      where: { userName: userName },
+      where: { userName: username },
     });
     console.log("Got the user as - ", user);
 

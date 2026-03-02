@@ -36,12 +36,14 @@ export async function createApiKeyService(
 ): Promise<ServiceResult<apiKey | undefined>> {
   try {
     const genKey = await hash(project, 15);
+    console.log("The generated key is - ", genKey);
 
     const genKeyRecord = await prisma.aPIKey.create({
       data: {
         userName: userName,
         key: genKey,
         project: project,
+        
       },
     });
     const returnData = {

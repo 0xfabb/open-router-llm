@@ -30,8 +30,9 @@ model User {
 }
 
 model APIKey {
+  id       String @id @default(uuid())
   key      String
   User     User   @relation(fields: [userName], references: [userName])
-  userName String @id 
+  userName String
   project  String
 }
