@@ -1,16 +1,18 @@
-import { hash, compare } from "bcryptjs";
 import { Request, Response } from "express";
-import { getApiKeysService } from "../services/UserService";
+import {
+  createApiKeyService,
+  getApiKeysService,
+} from "../services/UserService";
 import { APIResponse } from "../types/globalTypes";
 
 export const getKeyControl = async (req: Request, res: Response) => {
   try {
     const { userName } = req.body;
     console.log("Fetching API keys for userName:", userName);
-    
+
     const apikeys = await getApiKeysService(userName);
     console.log("Service returned:", apikeys);
-    
+
     if (!apikeys || !apikeys.success || !apikeys.data) {
       const response: APIResponse = {
         data: {},
@@ -36,5 +38,24 @@ export const getKeyControl = async (req: Request, res: Response) => {
       status: 500,
     };
     return res.json(response);
+  }
+};
+
+export const createKeyControl = async (req: Request, res: Response) => {
+  try {
+    const { userName, project } = req.body;
+    if (!userName || !project) {
+      const returnData: APIResponse = {
+        msg: "Please send all the required fields",
+        data: null,
+        success: false,
+        status: 400,
+      };
+      console.log("Didn't get all the required params for key-gen");
+      return res.json(returnData);
+    }
+    const createdKey = await createApiKeyService(userName, project);
+  } catch (error) {
+    console.log("Got this error at createKey - ", error);
   }
 };

@@ -38,3 +38,9 @@ export interface loggedInUser {
   refreshToken: string;
   tokenExpires: Date;
 }
+
+export interface apiKey {
+  key: string;
+  userName: string;
+  project: string;
+}
