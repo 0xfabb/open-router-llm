@@ -9,16 +9,26 @@ import { nullable } from "zod";
 
 export const getKeyControl = async (req: Request, res: Response) => {
   try {
-    const { username } = req.body;
-    console.log("Fetching API keys for username:", username);
+    const { userName } = req.body;
+    console.log("Fetching API keys for userName:", userName);
 
-    const apikeys = await getApiKeysService(username);
+    const apikeys = await getApiKeysService(userName);
     console.log("Service returned:", apikeys);
 
-    if (!apikeys || !apikeys.success || !apikeys.data) {
+    if (!apikeys || !apikeys.success) {
       const response: APIResponse = {
         data: {},
-        msg: "Couldn't find any keys for user, please create one first",
+        msg: apikeys?.error || "Couldn't find any keys for user, please create one first",
+        success: false,
+        status: 404,
+      };
+      return res.status(404).json(response);
+    }
+    
+    if (!apikeys.data || apikeys.data.length === 0) {
+      const response: APIResponse = {
+        data: [],
+        msg: "No API keys found for this user",
         success: true,
         status: 200,
       };
@@ -39,16 +49,16 @@ export const getKeyControl = async (req: Request, res: Response) => {
       success: false,
       status: 500,
     };
-    return res.json(response);
+    return res.status(500).json(response);
   }
 };
 
 export const createKeyControl = async (req: Request, res: Response) => {
   try {
-    const { username, project } = req.body;
-    console.log("Recieved data for key creation as - ", username, project);
+    const { userName, project } = req.body;
+    console.log("Recieved data for key creation as - ", userName, project);
 
-    if (!username || !project) {
+    if (!userName || !project) {
       const returnData: APIResponse = {
         msg: "Please send all the required fields",
         data: null,
@@ -56,19 +66,19 @@ export const createKeyControl = async (req: Request, res: Response) => {
         status: 400,
       };
       console.log("Didn't get all the required params for key-gen");
-      return res.json(returnData);
+      return res.status(400).json(returnData);
     }
-    const createdKey = await createApiKeyService(username, project);
+    const createdKey = await createApiKeyService(userName, project);
     console.log("The key was created with data - ", createdKey.data);
-    
-    if (!createdKey) {
+
+    if (!createdKey || !createdKey.success) {
       const returnData: APIResponse = {
-        msg: "Api key gen error in service",
+        msg: createdKey?.error || "Api key gen error in service",
         data: null,
         success: false,
         status: 400,
       };
-      return res.json(returnData);
+      return res.status(400).status(400).json(returnData);
     }
     const returnData: APIResponse = {
       msg: `A new api key under the project - ${project} is created successfully`,
@@ -76,8 +86,9 @@ export const createKeyControl = async (req: Request, res: Response) => {
       success: true,
       status: 201,
     };
-    return res.json(returnData);
+    return res.status(201).json(returnData);
   } catch (error) {
     console.log("Got this error at createKey - ", error);
+    return res.status(500).json({ msg: "Internal error" });
   }
 };

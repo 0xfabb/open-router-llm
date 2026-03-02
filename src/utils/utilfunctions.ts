@@ -1,9 +1,9 @@
 import { hash } from "bcryptjs";
-
-export const createUserName = async (email: string) => {
+import crypto from "crypto";
+export const createUserName = async () => {
   try {
-    const userNameHash = await hash(email, 15);
-    const userName = userNameHash.slice(0, 8);
+    const userNameBuffer = crypto.randomBytes(20);
+    const userName = userNameBuffer.toString("hex");
     return userName;
   } catch (error) {
     console.log("User name cannot be created because of error: ", error);

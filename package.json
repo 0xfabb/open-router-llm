@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsup",
     "start": "tsx src/server.ts",
-    "test": "node tests/server.js",
+    "test": "tsx tests/api-test.ts",
+    "test:old": "node tests/server.js",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
@@ -28,7 +29,11 @@
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "pg": "^8.19.0",
     "zod": "^4.3.6"
   }

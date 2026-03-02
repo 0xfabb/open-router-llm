@@ -1,6 +1,8 @@
 import { prisma } from "../lib/prisma";
 import { apiKey, APIKey, ServiceResult } from "../types/userTypes";
 import { hash } from "bcryptjs";
+import crypto from "crypto";
+
 
 export async function getApiKeysService(
   userName: string,
@@ -14,6 +16,7 @@ export async function getApiKeysService(
     const returnData = {
       success: true,
       data: apikey,
+      tokens: {},
     };
     return returnData;
   } catch (error) {
@@ -25,6 +28,7 @@ export async function getApiKeysService(
       success: false,
       data: undefined,
       error: "Some error occured",
+      tokens: {},
     };
     return returnDataErr;
   }
@@ -35,20 +39,20 @@ export async function createApiKeyService(
   project: string,
 ): Promise<ServiceResult<apiKey | undefined>> {
   try {
-    const genKey = await hash(project, 15);
-    console.log("The generated key is - ", genKey);
+    const generatedKey = crypto.randomBytes(32).toString("hex");
+    console.log("The generated key is - ", generatedKey);
 
     const genKeyRecord = await prisma.aPIKey.create({
       data: {
         userName: userName,
-        key: genKey,
+        key: generatedKey,
         project: project,
-        
       },
     });
     const returnData = {
       success: true,
       data: genKeyRecord,
+      tokens: {},
     };
     return returnData;
   } catch (error) {
@@ -57,6 +61,7 @@ export async function createApiKeyService(
       success: false,
       data: undefined,
       error: "Some error occured",
+      tokens: {},
     };
     return returnDataErr;
   }

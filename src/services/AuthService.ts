@@ -6,18 +6,32 @@ import {
 } from "../types/userTypes";
 import { compare, hash } from "bcryptjs";
 import { validateSignUpUser } from "../utils/validators";
-import { FIVE_MINUTES } from "../lib/constants";
+import { FIFTEEN_MINUTES } from "../lib/constants";
 import { prisma } from "../lib/prisma";
+import crypto from "crypto";
+import type { UserModel } from "../generated/prisma/models/User";
 
 export async function signUpService(
   userStruct: User,
-): Promise<ServiceResult<CreatedUser | undefined>> {
+): Promise<ServiceResult<UserModel | undefined>> {
   try {
     const passwordPlain = userStruct.password;
+    const accessToken = crypto.randomBytes(32).toString("hex");
+    const refreshToken = crypto.randomBytes(36).toString("hex");
     const passwordHashed = await hash(passwordPlain, 15);
-    const accessToken = await hash(userStruct?.email + Date.now(), 12);
-    const refreshToken = await hash(userStruct?.userName + Date.now(), 12);
-    const tokenExpires = new Date(Date.now() + FIVE_MINUTES);
+    const tokenExpires = new Date(Date.now() + FIFTEEN_MINUTES);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email: userStruct.email },
+    });
+    if (existingUser) {
+      return {
+        success: false,
+        error: "Email already registered",
+        statusCode: 409,
+        tokens: {},
+      };
+    }
 
     const createdUser = await prisma.user.create({
       data: {
@@ -32,27 +46,32 @@ export async function signUpService(
         isEmailVerified: false,
       },
     });
-
     if (!createdUser) {
       const returnData = {
         success: false,
         data: undefined,
         statusCode: 500,
+        tokens: {},
       };
       return returnData;
     }
     const returnData = {
       success: true,
       data: createdUser,
-      statusCode: 200,
+      statusCode: 201,
+      tokens: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      },
     };
     return returnData;
   } catch (error) {
     console.error("SignUp user service panicked with error: ", error);
     const returnData = {
       success: false,
-      error: "error",
-      statusCode: 200,
+      error: "Internal Server Error",
+      statusCode: 500,
+      tokens: {},
     };
     return returnData;
   }
@@ -63,7 +82,6 @@ export async function loginService(
   password: string,
 ): Promise<ServiceResult<loggedInUser | undefined>> {
   try {
-    const passwordHash = await hash(password, 15);
     const gotUser = await prisma.user.findUnique({
       where: {
         email: email,
@@ -74,6 +92,7 @@ export async function loginService(
         success: false,
         msg: "User not found",
         data: undefined,
+        tokens: {},
       };
       return returnData;
     }
@@ -81,22 +100,23 @@ export async function loginService(
     const userName = gotUser.userName;
     const passwordStored = gotUser.password;
     const isMatch = await compare(password, passwordStored);
-    
+
     // If password doesn't match, return error
     if (!isMatch) {
       const returnData = {
         success: false,
         msg: "Wrong password entered",
         data: undefined,
+        tokens: {},
       };
       return returnData;
     }
 
     // Password is correct - generate new tokens and update DB
-    const newRefreshToken = await hash(userName + Date.now(), 12);
-    const newAccessToken = await hash(gotUser.email + Date.now(), 12);
+    const newRefreshToken = crypto.randomBytes(32).toString("hex");
+    const newAccessToken = crypto.randomBytes(32).toString("hex");
     const newLastlogin = new Date(Date.now());
-    const tokenExpires = new Date(Date.now() + FIVE_MINUTES);
+    const tokenExpires = new Date(Date.now() + FIFTEEN_MINUTES);
 
     const updateAfterLogin = await prisma.user.update({
       where: {
@@ -114,13 +134,14 @@ export async function loginService(
     const loggedInUser = {
       email: gotUser.email,
       userName: userName,
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-      tokenExpires: tokenExpires,
     };
     const returnData = {
       success: true,
       data: loggedInUser,
+      tokens: {
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+      },
     };
     return returnData;
   } catch (error) {
@@ -129,6 +150,7 @@ export async function loginService(
       success: false,
       data: undefined,
       statusCode: 500,
+      tokens: {},
     };
     return returnData;
   }

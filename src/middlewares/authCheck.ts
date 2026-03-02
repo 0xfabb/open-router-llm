@@ -7,46 +7,47 @@ export async function loginCheck(
   next: NextFunction,
 ) {
   try {
-    const token = req.headers.refreshtoken;
-    const { username } = req.body;
-    console.log("Got the token as: ", token);
-    console.log("Got the username as: ", username);
+    const token = req.cookies.refreshToken;
+    const { userName } = req.body;
+    console.log("Middleware got the token as: ", token);
+    console.log("Middleware got the userName as: ", userName);
 
     if (!token || typeof token !== "string") {
       return res.status(400).json({ msg: "Invalid token provided" });
     }
 
-    if (!username || typeof username !== "string") {
-      return res.status(400).json({ msg: "Invalid username provided" });
+    if (!userName || typeof userName !== "string") {
+      return res.status(400).json({ msg: "Invalid userName provided" });
     }
 
     const user = await prisma.user.findUnique({
-      where: { userName: username },
+      where: { userName: userName },
     });
-    console.log("Got the user as - ", user);
-
     if (!user) {
+      console.log(
+        "Middleware couldn't find the user with this token and username",
+      );
       return res.status(401).json({ msg: "User not found" });
     }
 
-    // Check if user has a refresh token
     if (!user.refreshToken) {
+      console.log("There is no refresh token saved for this user");
+
       return res.status(401).json({ msg: "No refresh token found for user" });
     }
 
-    // Verify the provided token matches the stored refresh token
     if (token !== user.refreshToken) {
       return res.status(401).json({ msg: "Invalid token" });
     }
 
-    // Check if token has expired
     if (!user.tokenExpires || user.tokenExpires.getTime() < Date.now()) {
+      console.log("Token got expired cutu, please phirse login crow");
+
       return res.status(401).json({
         msg: "Token expired, please login again",
       });
     }
 
-    // Token is valid, proceed to next middleware/route handler
     next();
   } catch (error) {
     console.error("Auth check middleware error:", error);

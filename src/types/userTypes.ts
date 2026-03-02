@@ -17,11 +17,6 @@ export interface CreatedUser {
   lastname: string | null;
   userName: string;
   email: string;
-  isEmailVerified: boolean;
-  accessToken: string;
-  refreshToken: string | null;
-  tokenExpires: Date | null;
-  password: string;
 }
 
 export interface ServiceResult<T> {
@@ -29,14 +24,12 @@ export interface ServiceResult<T> {
   data?: T;
   error?: string;
   statusCode?: number;
+  tokens: Record<string, string>;
 }
 
 export interface loggedInUser {
   email: string;
   userName: string;
-  accessToken: string;
-  refreshToken: string;
-  tokenExpires: Date;
 }
 
 export interface apiKey {
