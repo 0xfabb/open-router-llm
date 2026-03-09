@@ -1,0 +1,19 @@
+llms:
+  gemini:
+    provider_name: "Google Gemini (Gemini API / Vertex AI)"
+    cost_input_per_1M_tokens_usd: 0.10    # published input price (text/image/video) on paid tier
+    cost_output_per_1M_tokens_usd: 0.40   # published output price (includes thinking tokens)
+    free_requests_info: "Grounding with Google Search: free up to 500 RPD (requests per day); additional free-tier allowances vary per model / Flash preview; see pricing doc."
+    source: "ai.google.dev/gemini-api/docs/pricing"
+  openai:
+    provider_name: "OpenAI (GPT family)"
+    cost_input_per_1M_tokens_usd: 0.15    # example: gpt-4o-mini input price (see OpenAI pricing table)
+    cost_output_per_1M_tokens_usd: 0.60   # example: gpt-4o-mini output price
+    free_requests_info: "None (no published ongoing free API requests per day); trial credits historically provided to new accounts — treat as 0 RPD for production."
+    source: "openai.com / developers.openai.com pricing"
+  anthropic_claude:
+    provider_name: "Anthropic Claude"
+    cost_input_per_1M_tokens_usd: null    # Anthropic often uses subscription + usage model; token $/M not consistently published
+    cost_output_per_1M_tokens_usd: null
+    free_requests_info: "Free web tier available (claude.com free plan). Exact RPD not published; Pro/Max expand usage. See Claude pricing page for plan limits."
+    source: "claude.com/pricing"

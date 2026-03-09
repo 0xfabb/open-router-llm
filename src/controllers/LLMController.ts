@@ -5,3 +5,7 @@ export const getLLMControl = async (req: Request, res: Response) => {
     msg: "Get LLMs controller is working",
   });
 };
+
+export const chatChoiceLLM = async (req: Request, res: Response) => {
+  const { prompt, provider, model } = req.body();
+};

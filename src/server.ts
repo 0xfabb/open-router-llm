@@ -25,6 +25,8 @@ let requests = 0;
 
 app.use((req: Request, res: Response, next) => {
   requests++;
+  const address = req.path;
+  console.log("Recieved a request on - ", address);
   console.log("Total Requests:", requests);
   next();
 });
